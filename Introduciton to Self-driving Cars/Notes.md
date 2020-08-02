@@ -22,7 +22,7 @@
 - Autonomous Capabilities
   - Automated lateral control?
   - Automated longitudinal control?
-  - OEDR
+  - __OEDR__
     - Driver supervision
     - Automatic emergency response
   - Complete vs Restricted ODD
@@ -35,3 +35,55 @@
 - __Level 5 - Fully Autonomous__: The system is fully autonomous and its ODD is unlimited. Meaning it can operate under any condition necessary.
 
 - Limitation of this taxonomy: ODD and safety record are more important.
+
+- __What is perception?__:
+  - We want to make sense the environment and ourselves
+  - Two things:
+    - identification
+    - understanding motion
+  - Why?
+    - to inform our driving decisions
+    
+- __Goals for perception__:
+  - Statics objects: Road and lane markings; curbs; traffic lights; road signs; construction signs, obstructions, and more.
+  - Dynamic object (on road)
+    - Vehicle
+      - 4 wheelers (cars, truck..)
+      - 2 wheelers (motorbike, bicycles...)
+    - Pedestrians
+  - Ego localization
+    - Position
+    - Velocity, acceleration
+    - Orientation, angular motion
+  
+- __Challenges to perception__
+  - Robust detection and segmentation
+  - Sensor uncertainty
+  - Occlusion, reflection.
+  - Illumination, lens flare
+  - Weather, precipitation
+
+- __Planning__
+  - Making decisions
+    - Long term
+      - How to navigate from NY to LA?
+    - Short term
+      - Can I change my lane now?
+      - Can I pass this intersection?
+    - Immediate
+      - Can I stay on track on this curved road?
+      - Accelerate or brake, by how much?
+
+- __Rule Based Planning__:
+  - What we just mentioned was rule based planning (involved decision tree) 
+  - In reactive rule based planning, we have rules that take into account the current state of ego vehicle and other objects and give decision.
+  - Example:
+    - If there is a pedestrian on the road, stop.
+    - If speed limit changes, adjust speed to match it.
+    
+- __Predictive Planning__:
+  - Make predictions about other vehicles and how they are moving. Then use these predictions to inform our decisions.
+  - Example: 
+    - That car has been stopped for the last 10 seconds. It is going to be stopped for the next few seconds. 
+    - Pedestrian is jaywalking.She will enter our lane by time we reach her.
+  - => Rely heavily on predicting information.
