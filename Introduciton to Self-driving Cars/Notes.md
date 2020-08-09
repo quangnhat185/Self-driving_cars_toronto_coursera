@@ -87,3 +87,109 @@
     - That car has been stopped for the last 10 seconds. It is going to be stopped for the next few seconds. 
     - Pedestrian is jaywalking.She will enter our lane by time we reach her.
   - => Rely heavily on predicting information.
+
+## Sensors and Computing Hardware
+_ __Sensor___:
+  - __Sensor__: device that measures or detects a property of the environment, or change to a property
+  - __Categorization__:
+    - Exteroceptive : surroundings
+    - Proprioceptive: internal
+  - __Sensors for perception:__
+    - __Camera__:
+      - Essential for correctly perceiving environment
+      - Comparison metrics:
+        - Resolution
+        - Field of view
+        - Dynamic range
+      - Trade-off between resolution and Field of view (FOV)?
+    - __Stereo camera__:
+      - Enables depth estimation from image data
+    - __LIDAR__:
+      - Detailed 3D scene geometry from LIDAR point cloud
+      - Because it is an active sensor with it's own light sources, LIDAR are not affected by the environment lightning.
+      - Comparison metrics:
+        - Number of beams
+        - Points per second
+        - Rotation rate
+        - Fiew of view
+      - Upcoming: Solid state LIDAR => future of affordabe autonomous driving
+    - __RADAR__:
+      - Robust object detection and Relative speed estimation
+      - They are particularly useful in adverse weather as they are mostly unaffected by precipitation
+      - Comparison metrics:
+        - Range
+        - FOV
+        - Position and speed accuracy
+      - Configurations:
+        - WFOV, short range
+        - NFOV, long range
+    - __Ultrasonic__:
+      - Sound navigation and ranging
+      - Short-range all-weather distance measurement
+      - Idea for low-cost parking solution
+      - Unaffected by lightning, precipitation
+      - Comparison metrics:
+        - Range
+        - FOV
+        - Cost
+    - __GNSS/IMU__:
+      - Global Navigation Satellite System and Inertial Measurement Units
+      - Direct measure of ego vehicle states
+        - position, velocity (GNSS)
+          - Varying accuracies: RTK, PPP, DGPS
+        - angular rotation rate (IMU)
+        - acceleration (IMU)
+        - heading (IMU, GPS)
+    - __Wheel odometry__:
+      - Track wheel velocities and orientation
+      - Use these to calculate overall speed and orientation of car
+        - speed accuracy
+        - position drift
+        
+    - __Highway Analysis__:
+    <p align="center"><img src="./img/highway.jpg" width=640></img></p>
+    
+    - __Urban Analysis__:
+    <p align="center"><img src="./img/urban.jpg" width=640></img></p>
+    
+- __Software Architecture I High-level__
+<p align="center"><img src="./img/main_module.jpg" width=640></img></p>
+
+- __Software Architecture Environment Perception__:
+<p align="center"><img src="./img/environment_perception.jpg" width=640></img></p>
+
+- __Software Architecture Environment Mapping__:
+<p align="center"><img src="./img/environment_mapping.jpg" width=640></img></p>
+
+- __Software Architecture I Motion Planning__:
+<p align="center"><img src="./img/motion_planning.jpg" width=640></img></p>
+
+- __Software Architecture I Vehicle Controller__:
+<p align="center"><img src="./img/vehicle_controller.jpg" width=640></img></p>
+
+- __Software Architecture I System Supervisor__:
+<p align="center"><img src="./img/system_supervisor.jpg" width=640></img></p>
+
+- __Environment Representation__:
+  - __Environmental Map Types__:
+    - Localization of vehicle in the environment
+      - Localization point cloud or feature map
+    - Collision avoidance with static objects
+      - Occupancy grid map
+    - Path planning
+      - Detailed road map
+  - __Point cloud or Feature Map (Localization Map)__:
+    - Collects continuous sets of LIDAR point or images, which are combined to make  a point cloud representation of the environment
+    - The difference between LIDAR maps is used to calculate the movement of the autonomous vehicle
+  - __Occupancy Grid__:
+    - Discretized fine grain grid map (can be 2D or 3D)
+    - Occupancy by a static object (tree, buildings)
+    - Curbs and other non drivable surfaces (dynamic objects are removed
+  - __Detailed Roadmap__:
+    - 3 Methods of creation:
+      - Fully Online
+      - Fully Offline
+      - Created Ofline and Update Online
+
+      
+     
