@@ -1,3 +1,5 @@
+## Module 3: Graded Quiz
+
 1. Which from the below options is the most ACCURATE and COMPLETE definition of risk in terms of self-driving vehicles?
 
 - [ ] Risk is any exposure to possible loss or injury
