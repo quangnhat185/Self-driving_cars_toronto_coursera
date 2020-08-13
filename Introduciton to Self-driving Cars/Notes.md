@@ -191,5 +191,84 @@ _ __Sensor___:
       - Fully Offline
       - Created Ofline and Update Online
 
-      
-     
+## Module 3: Safety for Self-Driving Cars
+
+_ __Uber Crash: Multiple Things Gone Wrong__
+  - No real time checks on safety drivers
+  - After the woman was detected on the road (6 sec before), the system first classifed as unknown object, then misclassified as a vehicle then a bicycle. This leads to the fact that the system ignored the information since it wasn't reliable.
+  - 1.3 sec before, Volvo system tried to do emergency braking maneuver, but this system was disabled in advance to avoid system conflicts.
+  
+- __Basic Safety Term__:
+  - Harm: refer to the physical harm to a living thing
+  - Risk: describe the probability that an even occurs combine with the severity that an event can cause.
+  - Safety: absence of unreasonable risk of harm
+  - Hazard: potential source of unreasonable risk of harm.
+  
+- __Major Hazard Sources__:
+  - Mechanical
+  - Electrical
+  - Hardware
+  - Software
+  - Sensor
+  - Behavioral
+  - Fallback
+  - Cyber
+    
+- __NHTS: Safety Framework__
+<p align="center"><img src="./img/safety_framework.jpg" width=640></img></p>
+
+- __NHTSA: Autonomy Design__
+<p align="center"><img src="./img/autonomy_design.jpg" width=640></img></p>
+
+- __NHTSA: Testing and Crash Mitigation__
+<p align="center"><img src="./img/testing_crash.jpg" width=640></img></p>
+
+- __Waymo: Safety Levels__
+<p align="center"><img src="./img/waymo_safety.jpg" width=640></img></p>
+
+- __Waymo: Safety Processes__:
+  - Identify hazard scenarios & potential mitigations.
+  - Use hazard assessment methods to define safety requirements:
+    - Preliminary analysis
+    - Fault tree
+    - Design failure Modes & Effective Analyses
+  - Conduct extensive testing to make sure safety requirement are met.
+
+- __Waymo: Level of testing to ensure safety__
+  - Simulation testing
+    - Test rigorously with simulation, thousand of variations, fuzzing of neighboring vehicles.
+    - Close-course testing
+      - Follow 28 core + 19 additional scenario compentencies on private test tracks
+      - Focus on four most common crashes: 
+        - Rear-end, intersection, road departure, lane change
+    - Real-world driving
+      - Start with smaller feet, expand steadily
+      - Already testing thousands of vehicles, with more on the way.
+
+- __GM: Safety__:
+  - Address all 12 elements of NHTSA Safety Framework
+  - Interactive design; Analyze -> Build -> Simulate -> Drive
+  - Safety through Comprehensive Risk Management and Deep Integration
+    - identify and address risks, validate solutions.
+    - prioritize elimination of risks, not just mitigation.
+  - All hardware, software systems meet:
+    - self-set standards for performance, crash protection reliability, serviceability, security and safety.
+    
+- __The Dilemma__:
+  - Question: How many miles (years) would autonomous vehicles have to be driven to demonstrate 95% confidence their failure rate to within 20% of the true rate of 1 fatality per 140 million km?
+  - Answer: ~400 years, with a fleet of 100 vehicles traveling all the time (total ~8 billion miles)
+  
+- __Generic Safety Frameworks__:
+  - __Fault Tree Analysis__
+    - Top down deductive failure analysis
+    - Boolean logic
+    - Assign probabilities to fault "leaves"
+    - Use logics gate to construct failure tree
+  
+  - __Failure Model and Effects Analyses (FMEA)__
+    - Bottom up process to identify all the effect of faults in a system
+    - __Failure Model__: Models or ways in which component of the system may fail
+    - __Effect Analysis__: Analyzing effects of the failure models on the operaton of the system.
+    
+- __FMEA: Steps__
+<p align="center"><img src="./img/fmea_step.jpg" width=640></img></p>
