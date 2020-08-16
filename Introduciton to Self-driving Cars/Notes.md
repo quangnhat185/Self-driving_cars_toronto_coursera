@@ -272,3 +272,55 @@ _ __Uber Crash: Multiple Things Gone Wrong__
     
 - __FMEA: Steps__
 <p align="center"><img src="./img/fmea_step.jpg" width=640></img></p>
+
+
+## Module 4: Vehicle Dynamic Modeling
+
+- __Kinetic Vs Dynamic Modeling__:
+  - At low speed, it is often sufficient to look only at kinematic models of vehicles (e.g: two wheeled robot, Bicycle model)
+  - Dynamic modeling is more involved, but captures vehicle behavior more precisely over a wide operating range. 
+
+- __Vectors__: Vectors are variables with both magnitude and direction 
+
+- __Coordinate Transformation__: Conversion between Inertial frame and Body coordinates is done with translation vector and a rotation matrix
+
+- __2D Kinematic Modeling___
+  - The kinematic constraint is nonholonomic
+  <p align="center"><img src="./img/2dkinematic_modeling.jpg" width=640></img></p>
+  
+
+- __Simple Robot Motion Kinematics__:
+<p align="center"><img src="./img/simple_motion_kinematics.jpg" width=640></img></p>
+
+- __Two-wheel robot kinematic model__
+<p align="center"><img src="./img/two_wheeled_kinematic.jpg" width=640></img></p>
+
+- __Kinematic Model of a Simple 2D Robot__
+<p align="center"><img src="./img/kinematic_simple_2D.jpg" width=640></img></p>
+  
+- __Dynamic Modeling:__
+  - At higher speed and slippery roads, vehicles do not satisfy no slip condition.
+  - Forces such as drag, road friction govern required throttle inputs.
+  - Step to build a typical dynamic model: Coordinate frames -> Lumped dynamic elements -> Free body diagram -> Dynamic equation
+  
+- __Full Vehicle Modeling:__
+  - All components, forces and moment in 3D
+    - Pitch, roll, normal forces
+    - Suspension, drivetrain, component model, 
+    
+- __2D Dynamic - Vehicle Longitudinal Motion__
+<p align="center"><img src="./img/dynamic_longitudinal_motion.jpg" width=640></img></p>
+
+
+- __2D Dynamic - Vehicle Lateral Motion__
+<p align="center"><img src="./img/dynamic_lateral_motion.jpg" width=640></img></p>
+
+- __Lateral Dynamics of Bicycle Model__:
+<p align="center"><img src="./img/bicycle_lateral_dynamic.jpg" width=640></img></p>
+
+- __Tire Slip Angles__:
+  - Many different tire slip models
+  - For small tire slip angles, the lateral tire forces are approximated as a linear function of tire slip angle
+
+
+    
