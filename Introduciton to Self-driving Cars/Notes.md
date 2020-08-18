@@ -322,5 +322,43 @@ _ __Uber Crash: Multiple Things Gone Wrong__
   - Many different tire slip models
   - For small tire slip angles, the lateral tire forces are approximated as a linear function of tire slip angle
 
+## Proportional-Integral-Derivative (PID) Controller 
+- __System Representation___: 
+  - The plant system could be linear or non-linear
+  - Plant representation: state-space form and transfer functions.
+  - Linear time-invariant system can be expressed using transfer functions.
 
+- __Controller or Compensator__:
+  - Control algorithm can vary from simple to complex
+  - Some simple algorithm, wide use in industry: Lead-lag controllers, PID controllers
+  - More complex algorithm:
+    - Non-linear methods: Feedback linearization, Backstepping, Sliding mode
+    - Optimization methods: Model predictive control
+
+- __PID control__
+  <p align="center"><img src="./img/PID_controller.jpg" width=640></img></p>
+
+- __Charterstics of P,I and D Gains__
+  <p align="center"><img src="./img/PID_characteristic.jpg" width=640></img></p>
+
+- __Architecture of Vehicle Control Strategy__:
+  <p align="center"><img src="./img/architecture_control_strategy.jpg" width=640></img></p>
+
+- __Longitudinal Speed Control__:
+  - __Cruise control:__
+    - Speed of the vehicle is controlled (by throttling and braking) to be kept at the reference speed.
+  
+  - __Upper Level Controller:__
+    - Determines the **desired acceleration** for the vehicle (based on the reference and actual velocity)
+    <p align="center"><img src="./img/upper_level_PID.jpg" width=640></img></p>
+  
+  - __Low lever controller:__
+    - Throttle input is calculated such that the vehicle track the desired acceleration determined by the upper control level
+  
+- __Feedback vs Feedforward control__
+  - Feedforward and feedback are often **used together**:
+    - Feedforward controller provide predictive response, non-zero offset.
+    - Feedback controller corrects the response, compensating for disturbances and errors in the model.
     
+    <p align="center"><img src="./img/feedback_feedforward.jpg" width=640></img></p>
+ 
