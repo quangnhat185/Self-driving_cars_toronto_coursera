@@ -44,13 +44,13 @@ As a system control engineer, you constructed the following closed loop transfer
 <p align="center"><img src="./img/w5_04.jpg" width=720></img></p> 
 
 - [ ] Transformation function 1
-<p align="center"><img src="./img/w5_04_01.jpg" width=240></img></p> 
+  <p align="center"><img src="./img/w5_04_01.jpg" width=240></img></p> 
 - [ ] Transformation function 2
-<p align="center"><img src="./img/w5_04_02.jpg" width=240></img></p> 
+  <p align="center"><img src="./img/w5_04_02.jpg" width=240></img></p> 
 - [ ] Transformation function 3
-<p align="center"><img src="./img/w5_04_03.jpg" width=320></img></p> 
-- [x] Transformation function 4
-<p align="center"><img src="./img/w5_04_04.jpg" width=320></img></p> 
+  <p align="center"><img src="./img/w5_04_03.jpg" width=320></img></p> 
+- [x] Transformation function 4 
+  <p align="center"><img src="./img/w5_04_04.jpg" width=320></img></p> 
 - [ ] None of the above
 
 <br><br>
