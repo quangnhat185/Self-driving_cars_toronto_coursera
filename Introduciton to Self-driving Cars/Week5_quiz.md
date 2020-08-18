@@ -79,6 +79,7 @@ Correct! Adding derivative control improves the step response in terms of oversh
 <br><br>
 7. Based on the engine map in the figure below, determine the throttle angle needed to produce 250 ft-lb of torque given that the current engine speed is 3500 RPM.
 <p align="center"><img src="./img/w5_07.jpg" width=640></img></p> 
+
 - __60__
 
 <br><br>
