@@ -322,7 +322,7 @@ _ __Uber Crash: Multiple Things Gone Wrong__
   - Many different tire slip models
   - For small tire slip angles, the lateral tire forces are approximated as a linear function of tire slip angle
 
-## Proportional-Integral-Derivative (PID) Controller 
+## Module 5: Proportional-Integral-Derivative (PID) Controller 
 - __System Representation___: 
   - The plant system could be linear or non-linear
   - Plant representation: state-space form and transfer functions.
@@ -362,3 +362,71 @@ _ __Uber Crash: Multiple Things Gone Wrong__
     
     <p align="center"><img src="./img/feedback_feedforward.jpg" width=640></img></p>
  
+## Module 6: Vehicle Lateral Control
+- __Lateral control for an automobile__:
+  - Define error relative to desired path
+  - Select a control law that drives errors to zero and satisfies input constraints
+  - Add dynamic considerations to manage forces and moments acting on vehicle.
+
+- __The Reference Path__:
+  - __Track__: 
+    - Straight line segments: (+) can be compact and easy to construct. (-) include heading discontinuities which make precise tracking a challenge with a steered vehicle-
+    - Waypoints: (+) can be restricted satisfy an approximate curvature constraint. Waypoints paths are very common an can be directly constructed from state estimation or GPS waypoints. 
+    - Parameterized curves. (+) Provide the benefit of continuously varying motion, an can be constructed to have smooth derivatives to aid in the consistency of errors and error rate calculation.
+  - __Main goal__:
+    - Heading path alignment
+    - Elimination of offset to path
+    
+- __Two type of Control Design__:
+  - Geometric Controllers:
+    - Pure pursuit (carrot following)
+    - Stanley
+    
+  - Dynamic controller
+    - MPC (model predictive control)
+    - Other control system: sliding mode, feedback linearization.
+    
+- __Geometric path tracking__:
+  - One of the most popular classes of path tracking in robotics and autonomous vehicles.
+    - Exploits geometric relationship between the vehicle and the path resulting in compact control law solution to the path tracking problem. 
+    - Use reference point on path to measure error of the vehicle, can be ahead of the vehicle.
+  - __Pure pursuit__:
+    - Pure pursuit method consists of geometrically calculating the trajectory curvature. 
+    - Pure pursuit is a proportional controller of the steering angle operating on crosstrack error some look ahead distance in front of the vehicle.
+    
+
+- __Stanley Controller Approach__:
+  - Stanley method is the path tracking approach used by Stanford University's DARPA Grand Challenge Team
+    - Use the center of the front axle as a reference point
+    - Look at both the error in heading and the error in position relative to the closes point on the path
+    - Define an intuitive steering law to:
+      - correct heading error
+      - correct position error
+      - Obey max steering angle bounds. 
+- __Model Predictive Control__:
+  - Numerically solving an optimization problem at each time step
+  - Receding horizon approach.
+  - Straightforward formulation.
+  - Explicitly handles constraints.
+  - Applicable to linear or nonlinear models. 
+  - Computationally expensive. 
+  
+- __MPC structure__
+mpc_structure
+
+- __Vehicle Lateral Control__:
+vehicle_lateral_control
+
+- __Cost Function - Minimize__
+  - Deviation from desired trajectory 
+  - Minimization of control command magnitude 
+    
+- **Constraints - Subject to** 
+  - Longitudinal and lateral dynamic models.
+  - Tire force limits
+  
+- **Can incorporate low level controller, adding constraints for**:
+  - Engine map
+  - Full dynamic vehicle models
+  - Actuator models
+  - Tire force models. 
