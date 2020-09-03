@@ -166,3 +166,73 @@ To navigate reliably, autonomous vehicle requires an estimate of their pose (pos
     
   - **GPS improvement**
   <p align="center"><img src="./img/gps_improvement.jpg"></img></p>  
+
+## Module 4: LIDAR Sensing
+LIDAR (light detection and ranging) sensing is an enabling technology for self-driving vehicles. LIDAR sensors can see farther than cameras and are able to provide accurate range information. This module develops a basic LIDAR sensor model an explores how LIDAR data can be used to produce point clouds (collections of 3D points in a specific reference frame). Learners will examine ways in which two LIDAR point clouds can be registered, or aligned, in order to determine how the pose of the vehicle has changed with time (i.e, the transformation between two local reference frames),
+
+- **Measurement Models for 3D LIDAR Senson**
+  - 3D LIDAR sensors report range, azimuth angle and elevation angle
+  <p align="center"><img src="./img/LIDAR_measurement_model.jpg"></img></p>
+
+- **Source of Measurement Noise**
+  - Uncertainty in determining the exact time of arrival of the reflected signal
+  - Uncertainty in measuring the exact orientation of the mirror
+  - Interaction with the target (surface absorption, specular reflection, etc..)
+  - Variation of propagation speed (e.g, through materials)
+  - **Can't rely on LIDAR alone to detect and avoid obstacles**
+  
+- **Motion Distortion**
+  - Typical scan rate for a 3D LIDAR is 5-20Hz.
+  - For a moving vehicle, each point in a scan is taken from a slightly different place.
+  - Need to account for this if the vehicle is moving quickly, otherwise motion distortion becomes a problem.
+
+- **LIDAR Point Clouds**
+  - One common solution to store point clouds data is to assign an index to each of the points, say point 1 through point n, and store the x,y and z coordinates of each point as a 3 by 1 column vector. From there, you could think about storing each of these vectors in a list, or stack them side by side into a matrix called big P. 
+  <p align="center"><img src="./img/bigP_point_clouds.jpg"></img></p>
+  <br>
+  
+- **Operation on point clouds** 
+  - **Translation**:
+  <p align="center"><img src="./img/tranlation_point_clouds.jpg"></img></p>
+  <br>
+  
+  - **Rotation**:
+  <p align="center"><img src="./img/rotation_point_cloud.jpg"></img></p>
+  <br>
+  
+  - **Scaling**:
+  <p align="center"><img src="./img/scalling_point_clouds.jpg"></img></p>
+  <br>
+  
+  - **Putting Them All Together**:
+  <p align="center"><img src="./img/all_point_clouds.jpg"></img></p>
+  <br>  
+  
+- **The Point Cloud Library (PCL)**
+  - Open-source Point CLoud Library (PCL)
+  - Widely used in industry
+  - Unofficial Python binding exist
+  
+- **State Estimation via Point Set Registration**
+  - The point set registration problems says, given 2 point clouds in two different coordinate frames, and with the knowledge that they correspond to or contain the same object in the world, how shall we align them to determine how the sensor must have moved between the two scans?
+  More specifically we want to figure out the optimal translation and optimal rotation between the two sensor reference frames that minimizes the distance between the 2 point clouds. 
+  <p align="center"><img src="./img/point_set_registration.jpg"></img></p>
+  <br>  
+  
+  
+  - Assuming we know which points corresponding to which, we can find the translation and rotation that lines up each point with its twin. In the example above, our idea rotation matrix would be the identity matrix (no rotation) while the idea translation matrix would be along the cars forward direction.
+  
+  - *The problem is that: We don't know which points corresponds to which?*
+  
+- **The Iterative Closet Point (ICP) Algorithm**
+  - __Intuition__: When the optimal motion is found, corresponding points will be closer to each other than to other points. 
+  - __Heuristic__: For each point, the best candidate for a corresponding point is the point that is closet to it right now. The idea is that this heuristic should give us the correspondences that let us make our next guess for the translation and rotation, that's a little bit better than our current guess. As our guesses get better and better, our correspondences should also get better and better until we eventually converge to the optimal motion and the optimal correspondences. This iterative optimization scheme using the closest point heuristic is where ICP gets its name.
+  
+- **ICP algorithm**
+<p align="center"><img src="./img/ICP_algo_1.jpg"></img></p><br>  
+<p align="center"><img src="./img/ICP_algo_2.jpg"></img></p><br>  
+<p align="center"><img src="./img/ICP_algo_3.jpg"></img></p><br>
+<p align="center"><img src="./img/ICP_algo_4.jpg"></img></p><br>
+
+- **ICP Variants**
+  - Point-to-plane ICP 
