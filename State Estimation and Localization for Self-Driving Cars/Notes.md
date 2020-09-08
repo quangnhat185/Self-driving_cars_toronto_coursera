@@ -236,3 +236,62 @@ LIDAR (light detection and ranging) sensing is an enabling technology for self-d
 
 - **ICP Variants**
   - Point-to-plane ICP 
+
+## Module 5: An Autonomous Vehicle State Estimator
+
+- **Calibration**:
+  - What do we need to know about our sensors and the vehicle to do sensor fusion?
+    - Sensor models, which may depend on car specific parameters (e.g, wheel radius).
+    - Relative poses between each sensor pair, so we can combine information in a common reference frame. 
+    - Time offsets between sensor polling times, so we combine only synchronized information. Intuitively, you might expect that directly combining LIDAR scan you just received with a GPS measrurement you just receive 5s ago, won't produce as good of a result as if the LIDAR scan and the GPS measurement were taken at the same time. 
+    
+- **Localization failure**
+  - How can localization fail?
+    - Sensor fail or provide bad data (e.g, GPS in a tunnel).
+    - Estimate error (e.g, linearization error in the EKF)
+    - Large state uncertainty (e.g, relying on IMU for too long)
+    
+- **Our Dynamic World**
+  - Many of the models use in practice for sensors like LIDAR, RADAR, cameras, etc. assumes that the world is static and unchanging.
+  - In the reality, the world is always moving and changing
+  - We need to account for this in our models, or find ways of ignoring objects that don't fit our assumption.
+  
+- **Why use GNSS with IMU & LIDAR**
+  - Error dynamics are completely different and uncorrelated (all three sensors use different measurement methods, and are unlikely to fail for the same reason.)
+  - IMU provides "smoothing" of GNSS, fill-in during outages due to jamming or maneuvering (Wheel odometry is also possible).
+  - GNSS provides absolute positioning information to mitigate IMU drift
+  - LIDAR provides accurate local positioning within known maps. It can compliment GNSS information by providing very accurate position estimates within a known map and in sky obstructed locations.
+
+- **Extended Kalman Filter IMI +  GNSS + LIDAR**
+  - **Loop**:
+    1. Update statue with IMU inputs
+    2. Propagate uncertainty.
+    3. If GNSS or LIDAR position available:
+      1. Compute Kalman Gain
+      2. Compute error state
+      3. Correct predicted state
+      4. Computed corrected covariance
+      
+<p align="center"><img src="./img/IMU_GNSS_LIDAR.jpg"></img></p><br>
+
+- **Assumptions**:
+  1. LIDAR provide positions in the same reference frame as GNSS (possible)
+  2. IMU has no biases (not realistic!)
+  3. State initialization is provided (realistic)
+  4. Our sensors are spatially and temporally aligned (somewhat realistic)
+  
+- **Calibration: A Necessary Evil**
+  - **Intrinsic Sensor Calibration:** is the process of determining the intrinsic (e.g, focal length) and extrinsic (i.e., position and orientation (pose) with respect to the world, or to another sensors) parameter of a sensors. For example, the need to to know the radius R of the wheel to compute velocity from wheel encoder. A few strategy to determine the parameters:
+    - Manufacture specifications.
+    - Measure by hand.
+    - Estimate as part of the state. 
+  
+  - **Extrinsic Sensor Calibration**: we're interested in determining the relative poses of all of the sensors usually with respect to the vehicle frame. For example, we need to know the relative pose of the IMU and the LIDAR, so the rates reported by the IMU are expressed in the same coordinate systems as the LIDAR point clouds. There are different techniques for doing extrinsic calibration:
+    - CAD model.
+    - Measure by hand.
+    - Estimate as part of the state.
+
+  - **Temporal Calibration**: In order to correctly combine data from two sensors, it is necessary to know the exact temporal relationship between data acquired from the different sources. There are different techniques for this:
+    - Assume zero (the simplest and most common thing but less accurate).
+    - Hardware synchronization.
+    - Estimate as part of the state
