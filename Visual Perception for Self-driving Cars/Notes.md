@@ -54,7 +54,8 @@ This module introduce the main concepts from the broad field of computer vision 
     <p align="center"><img src="./img/template_matching.jpg" width=640></img></p><br>
     
     - **Gradient Computation**
-      - Conolution can be used for Image gradient computation
+      - Conolution can be used for Image gradient comyou
+      putation
       - Image gradients are extremely useful for detection of edges and corners.
       - Define a finite difference kernel, and apply it to the image to get the image gradient.
       <p align="center"><img src="./img/gradient_computation.jpg" width=640></img></p><br>
@@ -155,3 +156,79 @@ Visual features are used to track motion through an environment and to recognize
     <p align="center"><img src="./img/motion_estimation_1.jpg" ></img></p><br>
     
   
+## Module 3: Feedforward Neural Networks
+Deep learning is a core enabling technology for self-driving perception. This module briefly introduces the core concepts employed in modern covolutional neural networks, with an emphasis on methods that have been proven to be effective for tasks such as object detection and semantic segmentation. Basic network architectures, common components and helpful tools for constructing and training networks are described.
+
+
+- __Feedforward Neural Networks__:
+
+  <p align="center"><img src="./img/feedforward_NN.jpg" ></img></p><br>  
+  
+  - __Function to estimate__:
+    - __Object Classification__: Image -> Label
+    - __Object Detection__: Image -> Label + Location
+    - __Depth Estimation__: Image -> Depth for every pixel
+    - __Semantic Segmentation__: Image -> Label for every pixel
+
+  - Feedforward neural networks can be used for a variety of perception tasks related to self-driving cars
+  - Feedforward neural networks rely on hidden layers to implement a good approximation of a target function. 
+  - Various activation functions are available to use within hidden layers. RELU is the default baseline.
+
+- __Output Layers and Loss Function__:
+  - __Classification__: image classification, semantic segmentation
+    - Softmax Output Layers are most often used as the output of a classifier, to represent the probability distribution over K different classes.
+    - Cross-Entropy Loss Function
+    
+  - __Regression__: Depth prediction, bounding box estimation
+    - Linear Output Units
+    - Mean Square errors loss function to model the mean of a probability distribution
+
+- **NN Training with Gradient Descent**:
+  - Batch Gradient Descent is an iterative first order optimization procedure.
+  - Parameter Initialization: Weights, Biases and other heuristics exists
+  - Stochastic (minibatch) Gradient Descent:
+    - GPUs work with powers of 2 batch sizes
+    - __Large batch size > 256__:
+      - Hardware underutilized with very small batch sizes.
+      - More accurate estimate of the gradient, but with less than linear return. 
+    - __Smaller batch size <64__:
+      - Small batches can offer a regularizing effect. The best generation error is often achieved with batch size of 1.
+      - Small batch sizes allow for faster convergence, as the algorithm can compute the parameter updates rapidly. 
+    - Shuffe the dataset is important. 
+  
+  - SGD Variation: ADAM is implemented in most deep neural network libraries, fairly robust to the choice of the learning rate and other hyperparameters. 
+
+- **Data Splits and NN Performance Evaluation**
+  - __Training Split__: used to minimize the Loss Function
+  - __Validation Split__: used to choose best hyperparameters, such as the learning rate, number of layers, etc.
+  - __Test Split__: The NN never observes this set. The developer never uses this set in the design process. 
+  
+  <p align="center"><img src="./img/data_split.jpg" ></img></p><br> 
+  
+  - __Reducing the Effect of Underfitting/Overfitting__
+    - **Underfitting** (Training loss is high): 
+      - Train longer
+      - More layers or more parameters per layers
+      - Change architecture
+      
+    - **Overfitting** (Generalization gap is large):
+      - More training data (Very expensive work in Self-driving cars)
+      - Regularization
+      - Change architecture
+  
+- **Neural Network Regularization**
+  - __L2-Norm Parameter Penalty__: Penalty term to the loss function 
+  - __Dropout__: Choose a subset of the network nodes to keep in the network
+    - Computationally inexpensive but powerful regularization method. 
+    - Does not significantly limit the type of the model or training procedure that can be used.
+    - Dropout layers are practically implemented in all neural network libraries. 
+  - __Early Stopping__
+
+- **Convolutional Neural Networks**
+  - Cross-correlation
+  - Stride, Padding
+  - Max Pooling layer
+  - **Advantages**:
+    - Convolutional NN are by design, a natural choice to process images.
+    - Convolutional layers have less parameters than fully connected layers, reducing the chances of overfitting.
+    - Convolutional layers use the same parameters to process every block of the image. Along with pooling layers, this leads to **translation invariance**, which is particularly important for image understanding. 
