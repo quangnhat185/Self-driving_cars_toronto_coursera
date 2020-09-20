@@ -232,3 +232,99 @@ Deep learning is a core enabling technology for self-driving perception. This mo
     - Convolutional NN are by design, a natural choice to process images.
     - Convolutional layers have less parameters than fully connected layers, reducing the chances of overfitting.
     - Convolutional layers use the same parameters to process every block of the image. Along with pooling layers, this leads to **translation invariance**, which is particularly important for image understanding. 
+
+## Module 4: 2D Object Detection
+The two most prevalent application of deep neural networks to self-driving are object detection, including pedestrian, cyclists and vehicle, and sematic segmentation, which associates image pixels with useful labels such as sign, light, curb, road, vehicle, etc. This module presents baseline techniques for object detection and the following module introduce semantic segmentation, both of which can be used to create a complete self-driving car perception pipeline.
+
+- **Object Detection is Not Trivial!**
+  - Extent of object is not fully observed!
+    - Occlusion: Background objects covered by foreground objects
+    - Truncation: Object are out of image boundaries
+    
+  - Scale: Object size gets smaller as the object moves farther away
+  
+  - Illumination changes: too bright or too dark
+
+- **Evaluation Metrics**
+  - Intersection-Over-Union (IOU): area of intersection of predicted box with a ground truth box, divided by the area of their union.
+  - True Positive (TP): Object class score > score threshold, and IOU > IOU threshold.
+  - False Positive (FP): Object class score > score threshold, and IOU < IOU threshold. 
+  - False Negative (FN): Number of ground truth object not detected by the algorithm
+  - Precision: TP/(TP + FP)
+  - Recall: TP/(TP + FN)
+  - Precision Recall Curve
+  - Average Precision (AP)
+  
+<p align="center"><img src="./img/conv_2D_detection.jpg" ></img></p><br>
+
+- **Feature Extractor**
+  - Feature extractors are the most computationally expensive component of the 2D object detector.
+  - The output of feature extractors usually has much lower width and height than those of the input image, but much greater depth.
+  - Most common extractors are: VGG, ResNet, and Inception
+  
+- **Prior/Anchor Bounding Boxes**  
+
+- **Ouput layers**: contain a classification head (label) and a Regression head (bounding box coordinate, probability)  
+
+- **MiniBatch Seletction**:
+  - Negative anchors target (IOU < 0.4 ):
+    - Classification: Background
+    - Regression: None
+    
+  - Positive anchors target (IOU > 0.6):
+    - Classification: Category of the ground truth bounding box
+    - Regression: Align box parameter with highest IOU ground truth bounding box
+    
+  - **Problem**: Majority of anchors are negatives results in neural network will label all detections as background.
+  - **Solution**: Sample a chosen minibatch size, with 3:1 ratio of negative to positive anchors to eliminate bias toward the negative class
+  - Choose negatives with highest classification loss to be included in the minibatch. 
+
+- **Non-max suppression**
+  For inference, use Non-Maximum Suppression to get a single output bounding box per object. 
+  <p align="center"><img src="./img/non-max_suppression.jpg" ></img></p><br>
+  
+
+- **3D Object Detection**
+Given a 2D bounding box in an image space and a 3D LiDAR point cloud, we can use the inverse of the camera project matrix to project the corner of the bounding box as rays into 3D space. The polygon intersection of these lines is called a frustum, and usually contains points in 3D that correspond to the object in our image. 
+
+  <p align="center"><img src="./img/3D_object_detection.jpg" ></img></p><br>
+  
+  - **Why from 2D &rarr; 3D Object detection**:
+    - **Advantages**:
+      - Allows exploitation of mature 2D object detectors, with high precision and recall.
+      - Class already determined from 2D detection.
+      - Does not require prior scene knowledge, such as ground plane location.
+      
+    - **Disadvantages**:
+      - The performance of the 3D estimator is bounded by the performance of the 2D detector. 
+      - Occlusion and truncation are hard to handle from 2D only.
+      - 3D estimator needs to wait for 2D detector, inducing latency in our system.
+      
+- **2D Object Tracking**
+We use image measurements to estimate position of object, but also incorporate position predicted by dynamics, i.e, our expectation of object's motion pattern. 
+  **Tracking Assumption**:
+    - Camera is not moving instantly to new viewpoint
+    - Objects do not disappear and reappear in different places in the scene. 
+    - If the camera is moving, there is a gradual change in pose between camera and scene. 
+    
+  <p align="center"><img src="./img/2D_object_tracking.jpg" ></img></p><br>
+
+- **Object tracking**:
+    - **Prediction**: Each object will have predefined **motion model** in image space. 
+    - **Correlation**:
+      - Get **Measurement Bounding Boxes** from 2D detector.
+      - Correlate prediction with the highest IOU measurement. 
+    - **Update**: The prediction and measurement are fused ans part of Kalman Filter Network. 
+    
+    - **Add and terminate**: 
+      - For each frame, we start new track if a measurement has no correlated prediction.
+      - We also terminate inconsistent tracks, if a predicted object does not correlated with a measurement for a preset number of frames. 
+      - The same methodology can be used to track object in 3D!
+
+- **Traffic Sign and Traffic Signal Detection**
+  - Traffic signs and signal appear smaller in size compared to cars, two-wheelers, and pedestrians.
+  - Traffic signs are highly variable with many classes to be trained on.
+  - Traffic signals have different states that are required to be detected. 
+  - In addition, traffic signals change state as the car drives. 
+  - 2D object detectors can be used to perform traffic sign and traffic signal detection without any modification.
+  - However, **multi-stage hierarchical models** have been shown to outperform the standard single state object detectors.
