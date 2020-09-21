@@ -328,3 +328,49 @@ We use image measurements to estimate position of object, but also incorporate p
   - In addition, traffic signals change state as the car drives. 
   - 2D object detectors can be used to perform traffic sign and traffic signal detection without any modification.
   - However, **multi-stage hierarchical models** have been shown to outperform the standard single state object detectors.
+
+## Module 5: Semantic Segmentation
+The second most prevalent of deep neural networks to self-driving is semantic segmentation, which associates image pixels with useful label such as a sign, light, curb, road, vehicle, etc. The main use of segmentation is to identify the drivable surface, which aids in ground plane estimation, object detection and lane boundary assessment. Segmentation labels are also being directly integrated into object detections as pixel marks, for static object such as signs, lights and lanes, and moving objects such as cars, trucks bicycles and pedestrian.
+
+- **Semantic Segmentation is Not Trivial**
+  - Occlusion, truncation, scale and illumination changes.
+  - Smooth boundaries (the ambiguity of boundaries in image space).
+  
+- **Evaluation Metrics**
+  - True Positive (TP): The number of correctly classified pixels belonging to class X. 
+  - False Positive (FP): The number of pixels that do not belong to class X in ground truth but are classified that class by the algorithm.
+  - False Negative (FN): The number of pixels that do not belong to class X in ground truth, but are not classified as that class by the algorithm.
+  - IOU_class = (TP)/(TP + FP + FN ) 
+
+- **ConvNets for Semantic Segmentation**  
+  - In a feature extractor and a feature decoder are require to provide the final output of semantic segmentation models. 
+  - A semantic segmentation model takes an image as an input, and provide us output: a category classification for every pixel. 
+  <p align="center"><img src="./img/convNet_semantic.jpg" ></img></p><br>
+  
+  - **3D Drivable Surface Estimation**
+    - Drivable space is defined as the region in front of the vehicle where it is safe to drive. In the context of semantic segmentation, the drivable surface includes all pixels from the road, crosswalks, lane markings, parking spots, even rail tracks. 
+    
+    1. Generate semantic segmentation output.
+    2. Associate 3D point coordinates with 2D image pixels (either from stereo data or from LiDAR point cloud). 
+    3. Choose 3D points belonging to the __Drivable Surface__ category. 
+    4. Estimate 3D drivable surface model.
+    
+    - Wee need at least three non-colinear 3D points to fit the plane. In practice we'll have many more points than are necessary, so we can apply the method of **least squares** once again to identify parameters that minimize the mean square distance of all points from the plane. 
+    
+    - We can use RANSAC algorithm to robustly fit a drivable surface plane model even with some errors in our semantic segmentation output:
+      1. From your data, randomly select 3 points.
+      2. Compute model parameter a, b, and d using least square estimation.
+      3. Compute number of inliners, N
+      4. If N> threshold, terminate and return the computed plane parameters. Else, go back to step 1. 
+      5. Recompute the model parameter using all the inliner set. 
+      
+- **Sematnic Lane Estimation**
+  - Estimate the lane, the area where the car can drive on the drivable surface.
+  - Estimate that is that the boundaries of the lane: Curb, Road and Car. 
+  
+  1. Extract segmentation mask from pixels belong to lane separators such as lane markings or curbs. 
+  2. Extract edges from this segmentation mask using an edge detector. 
+  3. Linear Lane Model: Use the Hough transform to detect lines in the output edge map. 
+  4. Filter lines based on slope to remove horizontal lines.
+  5. Remove any line that does not belong to the drivable space.
+  6. Determine which classes occur at the boundary of the lane. 
