@@ -91,3 +91,73 @@ This module introduced the richness and challenges of the self-driving motion pl
       - Layers of control actions form a graph, which can be searched using Dijkstra's.
       - Conformal lattice planner fits the control actions to the road structure.
       
+# Module 2: Mapping for Planning
+The occupancy grid is a discretization of space into fixed-sized cells, each of which contains a probability that it is occupied. It is a basic data structure used throughout robotics and alternative to storing full point clouds. This module introduces the occupancy grid and reviews the space and computation requirements of the data structure. In many cases, a 2D occupancy grid is sufficient; learners will examine ways to efficiently compress and filter 3D LIDAR scans to form 2D maps.
+
+- **Ocupancy Grid**
+  In the map below, we can see that the squares with trees and grass cover are labeled as one, whereas the road is labeled as zero.
+  <p align="center"><img src="./img/occupancy_map.jpg"></img></p><br>
+
+- **Range sensor**
+  - 2D range sensor measuring distance to static objects.
+
+- **Probabilistic Occupancy Grid**
+  - Use to handle sensor noise, environmental noise and map uncertainties.
+  - Each cell from Occupancy grid would have a specific probability, and a threshold of certainty will be used to establish occupancy.  
+  - To improve robustness multiple timesteps are used to produce the current map.
+  - Bayes's theorem is applied for at each update step for each cell.
+  - Issue:  
+    - Multiplication of numbers close to zero is hard for computers.
+    - Store the log odds ratio rather than probability.
+  
+- **Bayesian Log Odds Single Cell Update Derivation**
+  - Numerically stable.
+  - Computationally efficient. 
+  <p align="center"><img src="./img/bayesian_log_odds.jpg"></img></p><br>
+  
+- **Inverse Measurement Module**
+  - The measurement model in the mapping case represents the probability of getting a certain lidar measurement, given a cell in the occupancy grid is occupied.
+  - For occupancy grid updates, we need to flip this measurement model around &rightarrow; an inverse measurement model.  
+
+- **Inverse Measurement Module with Ray Tracing**
+  - Ray tracing algorithm using Bresenham's line algorithm (fast calculation)
+  - Perform update on each beam from the LiDar rather then each cell on the grid:
+    - Perform far fewer updates (ignores no information zone).
+    - Much cheaper per operation.
+
+- **Filtering of 3D LIDAR**
+  - Downsample the number of points of a LiDAR scan to a smaller amount to make update operation run in real-time.
+  - Remove objects that don't affect driving (e.g: objects above car height)
+  - Remove LiDAR points that hit the ground plane (drivable surface). We can utilize segmentation to remove points of road elements. 
+  - Remove Dynamic objects.
+  
+- **Projection of LIDAR to 2D Plane**
+    - **Simple solution**:
+      - Collapse all points by zeroing the Z coordinate.
+      - Sum up the number of LIDAR points in each grid location:
+        - More points indicated greater change of occupation of that grid cell. 
+
+- **High Detailed Road Map**: stores all of the locations of road signs and signals which might effect the autonomous vehicle. Due to the detailed and interconnected nature of the data, an effective method is required to store all information contained within the map. 
+
+- **Lanelet Map**: 
+  <p align="center"><img src="./img/lanelet_map.jpg"></img></p><br>
+
+  -  **Lanelet Element**: store all information connected to a small longitudinal segment of a lane on a road which it represents. 
+    - Defines the following:
+      - Left and right boundaries: Define the edges of a driving lane. Different operation can be performed on boundaries such as heading, curvature and center line.
+      - Regulation: Elements (e.g. stop sign) and Attributes (e.g. speed limit.)
+      - Connectivity to other lanelets.
+    - A new lanelet is created when a new regulatory element is encountered or ends. 
+    
+  - **Intersection Element**: store all lanelet elements which are parts of a single intersection for simple retrieval during motion planning tasks.  This will be followed by an explanation of connectivity all of the different lanelet element.
+  
+- **Operations Done on Lanelets**
+  - Make motion planning process simpler and more computationally efficient. 
+  - Path planning through complex road networks.
+  - Localize Dynamic Objects.
+  - Interaction with other Dynamic Objects.
+  
+- **Creations of Lanelets**
+  - Offline creation.
+  - Online creation.
+  - Offline creation with online updating. 
