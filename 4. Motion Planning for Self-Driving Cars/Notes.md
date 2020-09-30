@@ -161,3 +161,40 @@ The occupancy grid is a discretization of space into fixed-sized cells, each of 
   - Offline creation.
   - Online creation.
   - Offline creation with online updating. 
+
+## Module 3: Mission Planning in Driving Environments
+This module develops the concepts of shortest path search on graphs in order to find a sequence of road segments in a driving map that will navigate a vehicle from a current location to a destination. The module covers the definition of a roadmap graph with road segments, intersections and travel times, and presents Dijkstra's and A* search for identification of the shortest path across the road network.
+
+- **Mission Planning**: The objective of autonomous driving mission is ton find the optimal path for the eagle vehicle from its current position to given destination by navigating the road network while abstracting away the lower-level details (e.g, the rules of the road, other agents in driving scenarios)
+
+- **Graphs**: A discrete structure composed of a set of vertices denoted as V and a set of edges denoted as E. For the mission planner, each vertex in V will correspond to a given point on the road network, and each edge E will correspond to the road segment that connects any two points in the road network.
+
+<p align="center"><img src="./img/graphs.jpg" width = 640></img></p><br>
+
+- **Breadth First Search (BFS)**: work only with _unweighted graph_
+<p align="center"><img src="./img/BFS.jpg"></img></p><br>
+
+- **Unweighted Graph**: We assume that all road segments have equal length and ignore any factor of speed limit, traffic light, etc. 
+
+- **Weighted Graph**: We can add edge weights to each edge in the graph, that correspond to the length of the corresponding road segment.
+  <p align="center"><img src="./img/weighted_graph.jpg"></img></p><br>
+  
+- **Dijksra's Algorithm**
+  <p align="center"><img src="./img/dijkstra_algo.jpg"></img></p><br>
+  
+  
+  
+- **Problem of Dijksras**: __Dijksra's__ algorithm required us to search almost all of the edges present in the graph, even though only a few of them were actually useful for constructing the optimal path &rightarrow; issue whe nwe scale our problem to full road network for a city.
+
+- **Eclidean Heuristic**
+  - Exploits structure of the problem.
+  - Fast to calculate.
+  - Straight-line distance between two vertices is a useful estimate of true distance along the graph. **h(v) = ||t-v||*
+
+- **A* Algo**:
+  <p align="center"><img src="./img/A_start_algo.jpg"></img></p><br>
+  
+- **Extensions to other factors**:
+    - Traffic, speed limits, and weather affect mission planning.
+    - Time rather than distance is better at capturing these factors.
+    - Replace distance edge weights with time estimate. 
