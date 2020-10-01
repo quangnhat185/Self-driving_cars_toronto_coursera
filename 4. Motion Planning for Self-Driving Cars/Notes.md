@@ -181,8 +181,7 @@ This module develops the concepts of shortest path search on graphs in order to 
   
 - **Dijksra's Algorithm**
   <p align="center"><img src="./img/dijkstra_algo.jpg"></img></p><br>
-  
-  
+
   
 - **Problem of Dijksras**: __Dijksra's__ algorithm required us to search almost all of the edges present in the graph, even though only a few of them were actually useful for constructing the optimal path &rightarrow; issue whe nwe scale our problem to full road network for a city.
 
@@ -198,3 +197,101 @@ This module develops the concepts of shortest path search on graphs in order to 
     - Traffic, speed limits, and weather affect mission planning.
     - Time rather than distance is better at capturing these factors.
     - Replace distance edge weights with time estimate. 
+
+## Module 4: Dynamic Object Interactions
+This module introduces dynamic obstacles into the behavior planning problem, and presents learners with the tools to assess the time to collision of vehicles and pedestrians in the environment.
+
+- **Motion Prediction - Definition**
+  - Motion prediction of the dynamic object's attempts to estimate the future position, heading and velocity.
+  - Important as it allows:
+    - Planning a set of maneuvers to correctly interact with dynamic objects. 
+    - Avoid collisions on a planned trajectory. 
+
+- **Requirements for Motion Prediction Models**
+  - Mandatory Requirements:
+    - Class of Dynamic Object
+    - Current position, heading and velocity.
+    
+  - Optional requirements:
+    - History of the position, heading and velocity (Requires object tracking between identifications over a set amount of time)
+    - Current high definition roadmap.
+    - Image of the current dynamic object. 
+
+    <p align="center"><img src="./img/motion_prediction_requirement.jpg"></img></p><br>
+
+- **Constant Velocity Prediction Model**
+  <p align="center"><img src="./img/constant_velocity.jpg"></img></p><br>
+  
+  - Issues with constant velocity prediction model:
+    - Don't account for Vehicle Dynamics fully.
+    - Don't account for the Road (Position adjustment).
+    - Don't account for Road Signs (Velocity adjustment).
+    - Assumptions are too Strong and Incorrect for most Dynamic Object Motion.
+    
+- **Assumptions to Improve Prediction**
+  - Positional Assumptions
+    - Vehicles on driving lane usually follow the given drive lane. 
+    - Changing drive lanes is usually prompted by an indicator signal. 
+    
+    - Velocity Assumptions    
+      - Vehicle usually modify their velocity when approaching restrictive geometry (tight turns).
+      - Vehicles usually modify the velocity when approaching regulatory elements.
+
+- **Improvement of Position Estimation**
+  - Roadways with natural curvature.
+  - Vehicles on drive lane usually follow the given drive lane.
+  - The predicted path is set to follow the center of the driving lane (a set of points making up a polyline that is equally spaced from both lane boundaries) which the dynamic vehicle is one. 
+  - **Issue**:
+    - Difficult to predict lane change maneuvers without extra information.
+    - Multiple possible lanelets such as when on an intersection.
+    
+  - **Solution**:
+    - Most likely prediction based on the most likely behavior
+    - Multi-hypothesis prediction:
+      - Consider the range of all possible motions: left, right, stay stopped. 
+      - Provides more information to local planner.
+      - Safer due to human error (forgotten turn signal).
+
+- **Improvement to Velocity Prediciton**
+  - Road curvature can be used to improve the velocity prediction over the path.
+  - Improve the velocity prediction based on regulatory elements in the environment (stop sign, yield sign, lanelet priors)
+  - **Issue**:
+    - Vehicle don't always stay within their lane or stop at regulatory elements. 
+    - Vehicle off the road map cannot be predicted using this method.
+    
+- **Definition of Time to Collision**
+  - Assuming all dynamic object continue along their predicted path:
+    - Will then be a collision between any of the objects?
+    - If so how far into the future?
+
+  - Time to collision is comprised of:
+    - Collision point between the two dynamic objects.
+    - Prediction of the time to arrive to the collision point.
+  
+  - Requirement for Accuracy:
+    - Accurate predicted trajectories for all dynamic objects (position, heading and velocity)
+    - Accurate dynamic objects geometries. 
+    - Two basic approaches to calculating time to collision: **Simulation approach and Estimation approach**
+    
+  - **Simulation approach**
+    - Simulate the movement of each vehicle as time passes. 
+    - Taking account of the vehicle model over time.
+    - Checking if any part of the two dynamic object has collied. 
+    
+  - **Estimation approach**
+    - Geometries of the vehicles are approximated over duration of the predicted path.
+    - Collision point is estimated based on cars predictions.
+    - Many assumptions are usually made by this method usually to estimate time to collision.
+    
+  - **Simulation vs Estimation**:
+  <p align="center"><img src="./img/simulation_vs_estimation.jpg"></img></p><br>
+  
+  - **Simulation approach Pseudocode**
+  <p align="center"><img src="./img/simulation_pseudocode.jpg"></img></p><br>
+
+  - **Estimation of Dynamic Object State**
+    - Each predicted vehicle state has a predicted time at each location.
+    - Find the closet vehicle state along the predicted path to the current simulation time. 
+  
+  **Efficient Collision Detection method**
+  <p align="center"><img src="./img/efficient_collsion.jpg"></img></p><br>
