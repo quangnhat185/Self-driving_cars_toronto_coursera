@@ -295,3 +295,125 @@ This module introduces dynamic obstacles into the behavior planning problem, and
   
   **Efficient Collision Detection method**
   <p align="center"><img src="./img/efficient_collsion.jpg"></img></p><br>
+
+## Module 5: Principles of Behavior Planning
+This module develops a basic rule-based behavior planning system, which performs high level decision making of driving behavior such as lane changes, passing or parked cars and progress through intersection. The module defines a consistent set of rules that are evaluated to select preferred vehicle behavior that restrict the set of possible paths and speed profiles to be explored in lower level planning. 
+
+- **Behavior Planning**
+  - A behavior planning system plan the set of high level driving actions, or maneuvers to safely achieve the driving mission under various driving situations.
+  
+  - Behavior planner considers:
+    - Rules of the road. 
+    - Static objects around the vehicle.
+    - Dynamic objects around the vehicle.
+  
+  - Planned path must be safe and efficient.
+
+- **Driving maneuvers**
+  - **Track speed** - maintain current speed of the road.
+  - **Follow leader** - match the speed of the leading vehicle and maintain a safe distance.
+  - **Decelerate to stop** - begin decelerating and stop before a given space.
+  - **Stop** - remain stopped in the current position.
+  - **Merge** - join or switch onto a new drive lane.
+  
+- **Output of Behavior Planner**
+  - Driving maneuver to be executed.
+  - Set of constraints which must be obeyed by the planned trajectory of the self driving car which include:
+    - Idea path
+    - Speed limit
+    - Lane boundaries
+    - Stop locations
+    - Set of interest vehicle
+    
+
+- **Input Requirement**
+  - High definition road map
+  - Mission path
+  - Location information
+  
+  - **Perception information**
+    - All observed dynamic objects:
+      - Prediction of future movement.
+      - Collision points and time to collision.
+  
+    - All observed static objects (e.g, road signs).
+    - Occupancy grid.
+
+- **Finite State Machine**
+  - Each state is driving maneuver
+  - Transitions define movement from one maneuver to another
+  - Transitions define the rule implementation that needs to be met before a transition can occur.
+  - Entry action are modification to the constraints.
+  
+  <p align="center"><img src="./img/finite_state.jpg"></img></p><br>
+  
+- **Advantages of FSM in Behavior Planning**
+  - Limiting number of rule check
+  - Rule become more targeted and simple
+  - Implementation of the behavior planner become simpler
+  
+- **Assumption**: All dynamic obstacles obey rules of the road &rightarrow; Not always the case! 
+
+- **Single State Machine**
+  - Single state machine method:
+    - Add transitions
+    - Add additional transition conditions. 
+    
+  - **Issue with single state machine method:**
+    - Rule explosion
+    - Increase in computational time
+    - Complicated to create and maintain
+    
+- **Multiple State Machine**
+  - **Hierarchical State Machine (HSM)**: the super-states representing each scenario, and the sub-states representing the maneuvers to be handled in each scenarios. The transitions between the high level scenario state machine would be a rule that defines when a new scenario has been entered, based on the HD roadmap and dynamic vehicle information.
+  <p align="center"><img src="./img/hierachical_state.jpg"></img></p><br>
+  
+  - **Advantage of HSM**:
+    - Decrease in computation time.
+    - Simpler to create and maintain.
+    
+  - **Disadvantages of HSM**
+    - Rule Explosion
+    - Repetition of many rules in the low level state machine.
+
+- **State Machine Behavior Planning Issues**
+  - Rule-explosion when Dealing with Complex Scenarios
+  - Dealing with a Noisy Environment
+  - Hyperparameter Tuning
+  - Incapable of Dealing with Unencountered Scenarios
+
+- **Rule-Based Behavior Planner**
+  - Hierachy of rules:
+    - Safety critical
+    - Defensive driving
+    - Ride comfort
+    - Nominal behaviors
+    
+  - Reduced need for duplication: Rules can apply throughout ODD
+  
+  - Suffer from same challenges as finite state machines
+
+- **Fuzzy logic**
+  - While previously we set a parameterized distance which divided the space into follow the vehicle or do not follow the vehicle. With a Fuzzy system we're able to have a continuous space over which different rules can be applied. 
+  
+  - For example, a Fuzzy system might react strongly to a lead vehicle when very close to it and vice versa. 
+  <p align="center"><img src="./img/fuzzy_logic.jpg"></img></p><br>
+  
+  -**Issue**:  hyperparameters interact with one another, and as behaviors get more complex and inputs get noisier, the number of hyperparameters often increases, presenting a challenge.
+
+
+- **Reinforcement learning**  
+  - Reinforcement learning is a form of machine learning in which an agent learns how to interact with a given environment by taking action and receiving a continuous reward. 
+  
+  - Because of the extremely large variety of scenarios and inputs that an autonomous vehicle can encouter, direct reinforcement learning for behavior planning is unlikely to succeed. A solution is to use the **hierarchical reinforcement learning**. Where we divide the problem into low level policies in the maneuver space and high level policies with the the scenarios. 
+  <p align="center"><img src="./img/reinforcement_learning_2.jpg"></img></p><br>
+  
+  - **Issue**: 
+    - Training simulation environment is oversimplified.
+    - Ensuring safety.
+  
+- **Machine Learning**
+  - **Inverse Reinforcement Learning**: rather trying to obtain a policy given a reward function, the approach is to use human driving data as the policy. An attempt to learn the reward function used by humans. Once the reward function is learned the algorithm can then execute driving maneuvers similarly to human driver.
+  
+  - **End-to-end approaches**: The approach takes an input raw sensor data and attempt to output throttle, break, and steering commands. By learning, once again, from human driving commands in an imitation learning approach.
+  
