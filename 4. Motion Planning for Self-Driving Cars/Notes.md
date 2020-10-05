@@ -516,3 +516,203 @@ A reactive planner takes local information available within a sensor footprint a
   - Change in steering angle between planning cycles is bounded
   - Similar logic applied for changes in linear velocity inputs between planning cycles. 
   <p align="center"><img src="./img/steering_angle_constraint.jpg"></img></p><br>
+
+## Module 7: Putting it all together - Smooth Local Planning
+Parameterized curves are wisely used to define paths through the environment for self-driving. This module introduces continuous curve path optimization as a two point boundary value problem which minimized deviation from a desired path while satisfying curvature constrain.
+
+- **Boundary Conditions**
+  - Boundary conditions must hold on either endpoint of a path: the starting and ending conditions of the path.
+  
+- **Kinematic Constraints**
+  - Maximum curvature along path cannot be exceeded.
+  - Ensures that car can drive along path.
+  
+- **Parametric Curves**
+  - Parametric curve **r** can be described by a set of parameterized equations
+  - Parameter denotes path traversal, can be arc length or unitless
+  - Example: Cubic spline formulation for x and y (figure below)
+  <p align="center"><img src="./img/cubic_line_formulation.jpg"></img></p><br>
+  
+- **Path Optimization**
+  - Want to optimize path according to cost functional f
+  - Parametric curves allow for optimizing over parameter space, which simplifies optimization formulation
+<p align="center"><img src="./img/path_optimization.jpg"></img></p><br>
+
+- **Non-parametric Path**
+  - Reactive planner used non-parametric paths underlying each trajectory
+    - Path was represented as a sequence of points rather than parameterized curves.
+    
+- **Path Parameterization Examples**
+  - Two common parameterized curves are quintic splines and cubic spirals. 
+  - Both allow us to satisfy boundary conditions, and can be optimized parametrically. 
+  <p align="center"><img src="./img/path_parameterization.jpg"></img></p><br>
+  
+- **Qunitc Splines**
+  - x and y are defined by 5th order splines
+  - Closed from solution available for (x, y, &theta;k) boundary conditions
+  - The quintic spline is given by two equation, one for the progression of x along the spline and one for y.
+  - It has 12 parameters, six for the x equation and six for the y equation. These parameters correspond to the polynomial coefficients that form the shape of the curve
+  - **Limitations:**
+    - Challenging to constrain curvature due to nature of spline's curvature (due to potential discontinuities in curvature or its derivatives)
+    
+    <p align="center"><img src="./img/quintic_spline.jpg"></img></p><br>    
+    
+- **Polynomial Spiral**
+  - Spiral are defined by their curvature as a function of arc length
+  - Closed form curvature definition allows for simple curvature constraint checking:
+    - Curvature is well-behaved between sampled points as well due to polynomial formulation
+  - Since a spiral is a polynomial function of curvature,the curvature value will not change extremely quickly like it can in the case of quintic splines.
+    - This means we can constraint the curvature of only a few points in the spiral and the spiral will very likely satisfy the curvature constraints across the entire curve. 
+    <p align="center"><img src="./img/polynominal_spiral.jpg"></img></p><br> 
+    
+  - **Limitation**
+    - Spiral position does not have a closed from solution
+    - Fresnel integrals need to be evaluated numerically
+  
+- **Summary**
+    - The spline leads to computational efficiency, while the spiral leads to easier implementation of curvature constraints.
+
+- **Cubic Spiral and Boundary Conditions**
+  - Boundary conditions specify starting state and required ending state
+  - Spiral end position lacks closed form solution, require numerical approximation. In this course we introduced Simpson's rule.
+  
+- **Position Integrals and Simpson's Rule**
+  - Simpson'rule has improve accuracy over methods
+  - Divides the integration into n regions, and evaluate the function at each region boundary
+  <p align="center"><img src="./img/Simpson_rule_1.jpg"></img></p><br> 
+  
+- **Applying Simpson's Rule**
+  <p align="center"><img src="./img/Simpson_rule_2.jpg"></img></p><br>
+  
+- **Boundary Conditions via Simpson's Rule**
+  - Using our Simpson's approximation, we can now write out the full boundary conditions in terms of spiral parameters.
+  - Can now generate a spiral that satisfies boundary conditions by optimizing its spiral parameters and its lengths.
+  
+- **Approximate Curvature Constraints**
+  - Want to apply curvature constraints to path so it is drivable by the vehicle.
+  - Curvature constraints correspond to minimum vehicle turning radius-
+  - Can constrain sampled points along the path due to well-behaved nature of spiral's curvature.
+  - Assuming we constrain curvature at 1/3rd and 2/3rd of the way along the path
+  - Now all constraints and boundary conditions are complete to generate the spriral
+  <p align="center"><img src="./img/Simpson_rule_3.jpg"></img></p><br>
+  
+- **Bending Energy Objective**
+  - Bending energy distributes curvature evenly along spiral to promote comfort
+    - Equal to integral of square curvature along path, which has closed form for spirals.
+  - Gradient also has a closed form solution
+    - Has many term, so best left to a symbolic solver
+    
+  <p align="center"><img src="./img/bending_energy.jpg"></img></p><br>
+  
+- **Initial Optimization Problem**
+  - Can bring constrains and objective together to form the full optimization problem
+    - Can perform optimization in the vehicle's body attached frame to set starting boundary condition to zero
+  <p align="center"><img src="./img/initial_optimization.jpg"></img></p><br>
+  
+- **Soft Constraints**
+  - Challenging for optimizer to satisfy constrain exactly
+  - Can soften equality constraints by penalizing deviation heavily in the objective function
+  - We also assume initial curvature is known, which corresponds to a_0
+  <p align="center"><img src="./img/soft_constraints.jpg"></img></p><br>
+  
+- **Parameter Remapping**
+<p align="center"><img src="./img/parameter_remapping.jpg"></img></p><br>
+
+- **Final Optimization**
+  - Replacing spiral parameters with new parameters leads to new optimization formulation
+  - Curvature constraints correspond directly to new parameters
+  - Boundary conditions handled by soft constraints and constant p_0 and p_3
+  <p align="center"><img src="./img/final_optimization_problem.jpg"></img></p><br>
+  
+- **Optimization in Python**
+  <p align="center"><img src="./img/optimization_in_python.jpg"></img></p><br>
+
+- **Conformal Lattice**
+  - Goal is to plan a feasible collision-free path to goal 
+  - Conformal lattice exploits road structure to speed up planning
+  - Lattice paths are laterally offset from a goal point along road
+
+- **Goal Horizon**
+  - Short lookahead improves computation time, but reduces ability avoid obstacles
+  - Goal point is dynamically calculated based on speed and other factors
+  - Endpoints are sampled laterally offset from goal according to the heading
+
+- **Generating Spirals**
+  - Can then compute cubic spirals to each goal point
+  - Focus on kinematic feasibility for now, collision checking come later
+  - If a goal point cannot be reached with a spiral under the kinematic constraints, discard that goal point
+  
+- **Getting Spiral Parameters**
+  - Convert optimization variables back into spiral parameters
+  - Can then use spiral coefficients to sample points along the spiral
+  
+- **Trapezoidal Rule Integration**
+  - Use numerical integration to generate positions along path
+  - Trapezoidal rule is faster for generating entire path than Simpson'rule
+  - Discrete representation generated using **cumulative-trapezoid()** function in Python
+  <p align="center"><img src="./img/Trapezoidal_rule.jpg"></img></p><br>
+
+- **Generated Path Set**
+  - For each of our goal state, we can optimize a spiral to the goal point
+  - Using Trapezoidal numerical integration we get a discrete pat representation
+  - Now we need to see which are collision free
+  <p align="center"><img src="./img/Goal_state_selection.jpg"></img></p><br>
+  
+- **Collision Checking**
+  - Can do this through circle-based or swath-based collision checking for each point along each path (as in Module 4)
+  - Parked vehicle (in red) represent obstacle, path that would result in a collision with it are marked red. 
+  <p align="center"><img src="./img/collision_checking.jpg"></img></p><br>
+  
+- **Path Selection**
+  - Need to select best path among collision-free paths
+  - Objective function for selection is a design choice
+  - Can reward paths that track the center of the road, and penalize paths that come too close to obstacles.
+  - Best path is **highlighted in blue**
+  <p align="center"><img src="./img/path_selection.jpg"></img></p><br>
+
+- **Full Path**
+  - Can repeat this process for each planning step as car moves along road.
+  - Path will converge to centerline of the road, even when obstacles are present.
+
+- **Behavioral Planner Reference Velocity**  
+  - Need to compute reference velocity
+  - Can use the speed limit of the road as a starting point
+  - Behavior planner maneuver will also influence reference velocity
+    - E.g. a stopping maneuver requires us to stop
+
+- **Dynamic Obstacles**
+  - Lead dynamic obstacles regulate our speed to prevent collisions
+  - Time to collision (TTC) is an important metric to preserve when driving with lead vehicles
+  - Need to reach the red point at lead vehicle speed to ensure there is no collision
+  
+- **Curvature and Lateral acceleration**
+  <p align="center"><img src="./img/curvature_and_lateral_acceleration.jpg"></img></p><br>
+  
+- **Linear Ramp Profile**
+  - Simplest shape is a linear ramp to our desired velocity
+  - We know the total arc length of our path s and our initial and final speed v_0 and v_f
+  <p align="center"><img src="./img/linear_ramp_profile.jpg"></img></p><br>
+
+- **Linear Ramp - Acceleration Calculation**
+  - Can calculate acceleration using initial and final velocity as well as path arc length
+    - Need to be sure acceleration values don't exceed our comfort rectangle as discussed in Module 1
+  - If we clamp our acceleration, we can recompute the final velocity using the clamped acceleration for a
+  <p align="center"><img src="./img/linear_ramp_calculate_acceleration.jpg"></img></p><br>
+  
+- **Linear Ramp - Velocity Calculation**
+  - For a given acceleration, we can then compute the velocity at each point by using the accumulated arc length s_j up to that point
+  <p align="center"><img src="./img/linear_ramp_calculate_velocity.jpg"></img></p><br>
+
+- **Trapezoidal Profile**
+  - Alternative profile is Trapezoidal, car decelerates to slower speed before stopping &rightarrow; useful for stop sign scenarios.
+  - Deceleration chosen to be well within comfort reactange to maximize passenger comfort
+  <p align="center"><img src="./img/trapezoidal_profile.jpg"></img></p><br>
+  
+- **Trapezoidal Profile - First Segment**
+<p align="center"><img src="./img/trapezodial_profile_first.jpg"></img></p><br>
+  
+- **Trapezoidal Profile - Third Segment**
+<p align="center"><img src="./img/trapezodial_profile_third.jpg"></img></p><br>
+
+- **Trapezoidal Profile - All Segment**
+<p align="center"><img src="./img/trapezodial_profile_all.jpg"></img></p><br>
